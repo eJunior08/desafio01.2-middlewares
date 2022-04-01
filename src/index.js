@@ -24,7 +24,23 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+  const isPro = user.pro;
+
+  if (isPro) {
+    return next();
+  }
+
+  const isTodosOnMaxLimit = user.todos.length >= 10;
+
+  if (isTodosOnMaxLimit) {
+    return response
+      .status(403)
+      .json({ error: "You can't add a todo! Limit reached" });
+  }
+
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
