@@ -44,7 +44,31 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+  const { id } = request.params;
+
+  const savedUser = users.find((user) => user.username === username);
+
+  if (!savedUser) {
+    return response.status(404).json({ error: "User not found!" });
+  }
+
+  if (!validate(id)) {
+    return response
+      .status(400)
+      .json({ error: "Id is not valid! It must be a UUID" });
+  }
+
+  const savedTodo = savedUser.todos.find((todo) => todo.id === id);
+
+  if (!savedTodo) {
+    return response.status(404).json({ error: "ToDo not found!" });
+  }
+
+  request.user = savedUser;
+  request.todo = savedTodo;
+
+  return next();
 }
 
 function findUserById(request, response, next) {
